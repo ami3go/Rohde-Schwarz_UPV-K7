@@ -1,5 +1,5 @@
 # import pyvisa # PyVisa info @ http://PyVisa.readthedocs.io/en/stable/
-import serial.tools.list_ports
+import pyvias
 import serial
 import time
 
