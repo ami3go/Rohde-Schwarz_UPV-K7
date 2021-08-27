@@ -2,6 +2,7 @@
 import serial.tools.list_ports
 import serial
 import time
+import pyvisa
 
 
 #It is recommended to use a minimum delay of 250ms between two commands
@@ -16,7 +17,7 @@ USER_REQUESTED_POINTS = 1000
     ## Asking for zero (0) points, a negative number of points, fewer than 100 points, or a non-integer number of points (100.1 -> error, but 100. or 100.0 is ok) will result in an error, specifically -222,"Data out of range"
 
 ## Initialization constants
-INSTRUMENT_VISA_ADDRESS = '' # Get this from Keysight IO Libraries Connection Expert
+INSTRUMENT_VISA_ADDRESS = 'USB0::0x0AAD::0x004D::101608::INSTR' # Get this from Keysight IO Libraries Connection Expert
     ## Note: sockets are not supported in this revision of the script (though it is possible), and PyVisa 1.8 does not support HiSlip, nor do these scopes.
     ## Note: USB transfers are generally fastest.
     ## Video: Connecting to Instruments Over LAN, USB, and GPIB in Keysight Connection Expert: https://youtu.be/sZz8bNHX5u4
@@ -1186,6 +1187,36 @@ class st_com:
         self.enable_req = req3(self.prefix + ":ENABle")
         self.event = req3(self.prefix + ":" + "EVENt")
 
+
+def manual_meas:
+
+    rm = pyvisa.ResourceManager()
+    INSTRUMENT_VISA_ADDRESS = "USB0::0x0AAD::0x004D::101608::INSTR"
+    instr_list = list(dict.fromkeys(rm.list_resources()))
+    print(instr_list)
+    print(f"List length: {len(instr_list)}")
+
+    for resource in instr_list:
+        if INSTRUMENT_VISA_ADDRESS in resource:
+            instr = rm.open_resource(resource)
+
+    print(f"instr = {instr}   instr type: {type(instr)}")
+    instr.read_termination = "\n"
+    instr.write_termination = "\n"
+    instr.timeout = 2500
+
+    # Switch off display update to save resources
+    # instr.write("SYST:DISP:UPD OFF")
+
+    raw_data = (instr.query("SENSe:DATA1?"))
+    #                      "SENSe<1|2|3|6|7|8>:FUNCtion <state>"))
+    # data_list = raw_data.split()
+    # data_number = float(data_list[0])
+    # data_unit = data_list[1]
+
+    print(f"Returned data type: {type(raw_data)}, Raw Data: {raw_data}")
+
+    instr.close()
 
 
 if __name__ == '__main__':
