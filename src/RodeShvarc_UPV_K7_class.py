@@ -21,7 +21,7 @@ INSTRUMENT_VISA_ADDRESS = 'USB0::0x0AAD::0x004D::101608::INSTR' # Get this from 
     ## Note: USB transfers are generally fastest.
     ## Video: Connecting to Instruments Over LAN, USB, and GPIB in Keysight Connection Expert: https://youtu.be/sZz8bNHX5u4
 
-GLOBAL_TOUT =  10 # IO time out in milliseconds
+GLOBAL_TOUT = 10 # IO time out in milliseconds
 
 
 
