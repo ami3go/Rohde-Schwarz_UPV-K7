@@ -17,6 +17,7 @@ USER_REQUESTED_POINTS = 1000
 
 ## Initialization constants
 INSTRUMENT_VISA_ADDRESS = 'USB0::0x0AAD::0x004D::101608::INSTR' # Get this from Keysight IO Libraries Connection Expert
+#                          USB0::0x0AAD::0x004D::101608::INSTR
     ## Note: sockets are not supported in this revision of the script (though it is possible), and PyVisa 1.8 does not support HiSlip, nor do these scopes.
     ## Note: USB transfers are generally fastest.
     ## Video: Connecting to Instruments Over LAN, USB, and GPIB in Keysight Connection Expert: https://youtu.be/sZz8bNHX5u4
@@ -43,7 +44,7 @@ class com_interface:
         # super(communicator, self).__init__(port="COM10",baudrate=115200, timeout=0.1)
         self.rm = pyvisa.ResourceManager()
         self.res_name = None
-        print(self.rm)
+        print(f"  *** Check the VISA driver version {self.rm}")
         self.inst = None
 
         self.cmd = storage()
@@ -52,15 +53,13 @@ class com_interface:
         rm_list = self.rm.list_resources()
         i = 0
         for item in rm_list:
-            if "AutoWave" in item:
+            if INSTRUMENT_VISA_ADDRESS in item:
                 self.res_name = item
         self.inst = self.rm.open_resource(self.res_name)
         self.inst.set_visa_attribute(pyvisa.constants.VI_ATTR_SEND_END_EN, 1)
         # self.inst.write_termination = ""
         # self.inst.timeout = 2000 # timeout in ms
         print("Connected to: ", self.inst.query("*IDN?"))
-        print("Protocol OFF: ", self.inst.query("*PRCL:OFF"))
-        print(self.inst.query("*ECHO:ON"))
 
 
     def send(self, txt):
